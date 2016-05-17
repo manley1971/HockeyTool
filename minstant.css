@@ -1,5 +1,8 @@
 /* CSS declarations go here */
-
+.vid{
+  border-style:solid;
+  broder-width:5px;
+}
 .chatty {
   height: 330px;
   width:85%;

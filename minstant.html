@@ -1,5 +1,5 @@
 <head>
-  <title>minstant</title>
+  <title>HockeyTool</title>
 </head>
 
 <body>
@@ -20,7 +20,7 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/">
-        Manley1971-Minstant
+        Hockey Trainer
       </a>
     </div>
     <div class="nav navbar-nav">
@@ -37,7 +37,7 @@
 
 <!-- display a list of users -->
 <template name="available_user_list">
-	<h2>Choose someone to chat with:</h2>
+	<h2>Choose a demonstration video to compare the logged in user with:</h2>
 	<div class="row">
 	{{#each users}}
 	{{> available_user}}
@@ -68,9 +68,27 @@
 
 
 <!-- Top level template for the chat page -->
-<template name="chat_page">
-	<h5>Please type in the box below to send a message. You can type obvious characters like ";):" or ":-)" and get emoticons.
-            Or you can click the buttons to have them inserted for you.</h5>
+<template name="chat_page"><button>Upload video file</button>
+	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can got to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
+	<div class = "vid">
+            <video width="320" height="240" controls>
+            <source src="movie.mp4" type="video/mp4">
+            <source src="movie.ogg" type="video/ogg">
+            Your browser does not support the video tag.
+        </video>
+            <video width="320" height="240" controls>
+            <source src="movie.mp4" type="video/mp4">
+            <source src="movie.ogg" type="video/ogg">
+            Your browser does not support the video tag.
+        </video>
+<br/>
+<button>Advance Both Players One Frame</button>
+<button>Play both frames</button>
+<button>Pause both frames</button>
+<button>Line drawing tool</button>
+</div>
+
+
 
 	<div class="row chatty">
 
@@ -78,7 +96,7 @@
 			{{#each messages}}
 			{{> chat_message}}
 			{{/each}}
-      ... and you can send your chatmate all the messages you would want
+      ... and each comment is logged with a timestamp. By default there will be no hockey emoticons.
       <br>
       <br>
       <br>

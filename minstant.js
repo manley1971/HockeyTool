@@ -200,18 +200,19 @@ if (Meteor.isServer) {
 
     if (!Meteor.users.findOne()){
       console.log("creating additional users");
-Meteor.users.insert({profile:{username:"bart", avatar:"bart.png"}, emails:[{address:"bart@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
-Meteor.users.insert({profile:{username:"lisa", avatar:"lisa.png"}, emails:[{address:"lisa@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+Meteor.users.insert({profile:{username:"Orr", avatar:"bart.png"}, emails:[{address:"i@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
-Meteor.users.insert({profile:{username:"homer", avatar:"homer.png"}, emails:[{address:"homer@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
-Meteor.users.insert({profile:{username:"dave", avatar:"dave.png"}, emails:[{address:"dave@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+Meteor.users.insert({profile:{username:"Gretzky", avatar:"lisa.png"}, emails:[{address:"lisa@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+
+Meteor.users.insert({profile:{username:"Mia-2016", avatar:"homer.png"}, emails:[{address:"user1@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+Meteor.users.insert({profile:{username:"Mia-2015", avatar:"dave.png"}, emails:[{address:"mia@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
 Meteor.users.insert({profile:{username:"ralph", avatar:"ralph.png"}, emails:[{address:"ralph@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 Meteor.users.insert({profile:{username:"toady", avatar:"toady.png"}, emails:[{address:"toady@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
-      for (var i=1;i<9;i++){
+      for (var i=2;i<9;i++){
         var email = "user"+i+"@test.com";
-        var username = "user"+i;
+        var username = "Instructor"+i;
         var avatar = "ava"+i+".png"
         console.log("creating a user with password 'test123' and username/ email: "+email);
         Meteor.users.insert({profile:{username:username, avatar:avatar}, emails:[{address:email}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
