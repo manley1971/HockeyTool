@@ -20,7 +20,7 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/">
-        Hockey Trainer
+        Hockey Trainer Tool
       </a>
     </div>
     <div class="nav navbar-nav">
@@ -68,7 +68,8 @@
 
 
 <!-- Top level template for the chat page -->
-<template name="chat_page"><button>Upload video file</button>
+<template name="chat_page"><button>Upload video file</button><input type="file" id="input">
+
 	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can got to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
 	<div class = "vid">
             <video width="320" height="240" controls>
