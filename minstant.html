@@ -71,37 +71,22 @@
 <template name="chat_page"><button>Upload video file</button><input type="file" id="input">
 
 	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can got to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
-	<div class = "vid">
-            <video width="320" height="240" controls>
-            <source src="movie2.mp4" type="video/mp4">
-            <source src="movie3.wav" type="video/ogg">
-            Your browser does not support the video tag.
-        </video>
-            <video width="320" height="240" controls>
-            <source src="movie.mp4" type="video/mp4">
-            <source src="movie3.wav" type="video/ogg">
-            Your browser does not support the video tag.
-        </video>
-<br/>
+<script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
+
+    <iframe id = "mainviewer" src="https://player.vimeo.com/video/165785221" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+
+    <iframe id = "secondewer" src="https://player.vimeo.com/video/165785221" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<div>
 <button>Advance Both Players One Frame</button>
 <button>Play both frames</button>
 <button>Pause both frames</button>
 <button>Line drawing tool</button>
-</div>
-
 
 
 	<div class="row chatty">
 
-			<div class="well well-lg insidechatty">
-			{{#each messages}}
-			{{> chat_message}}
-			{{/each}}
-      ... and each comment is logged with a timestamp. By default there will be no hockey emoticons.
-      <br>
-      <br>
-      <br>
-      <br>
 
 			</div>
 
