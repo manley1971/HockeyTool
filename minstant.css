@@ -3,53 +3,6 @@
   border-style:solid;
   broder-width:5px;
 }
-.chatty {
-  height: 330px;
-  width:85%;
-  overflow:scroll;
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 3px;
-  border-top-color: #e5e5e5;
-  border-right-color: #eee;
-  border-bottom-color: #e5e5e5;
-  border-left-color: #eee;
-
-  font-family: Times;
-  text-align: left;
-  margin: 60px;
-  color: blue;
-  background-repeat: repeat;
-  background-size: auto;
-  box-shadow: 10px 10px 25px 20px #888888;
-}
-
-
-.m{
-  width:85%;
-}
-.one {
-  overflow:scroll;
-  height: 110px;
-  width: 85%;
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 3px;
-  border-top-color: #e5e5e5;
-  border-right-color: #eee;
-  border-bottom-color: #e5e5e5;
-  border-left-color: #eee;
-  margin: 20px;
-  border: 10px;
-  box-shadow: 10px 10px 25px 20px #888888;
-}
-.user_avatar {
-  font-size: 200%;
-  color: blue;
-  margin: 2px;
-  border-radius: 35%;
-	min-height:100px;
-}
 
 .avatar_img{
 	height:75px;

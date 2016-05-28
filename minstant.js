@@ -1,4 +1,8 @@
 Chats = new Mongo.Collection("chats");
+Times = new Mongo.Collection("times");
+Kids = new Mongo.Collection("kids");
+Tests = new Mongo.Collection("tests");
+
 var MAX_MESSAGES = 1000000*100; //container size times messages
 function timerScroll() {
   console.log("Scrolling down.")
@@ -15,6 +19,16 @@ Router.route('/', function () {
     this.render("navbar", {to:"header"});
     this.render("lobby_page", {to:"main"});
   });
+
+Router.route('/timer', function () {
+          this.render("navbar", {to:"header"});
+          this.render("timer_page", {to:"main"});
+        });
+Router.route('/times', function () {
+          this.render("navbar", {to:"header"});
+          this.render("times_page", {to:"main"});
+        });
+
 
   // specify a route that allows the current user to chat to another users
 Router.route('/chat/:_id', function () {
@@ -54,12 +68,38 @@ Router.route('/chat/:_id', function () {
 if (Meteor.isClient) {
   // set up the main template the the router will use to build pages
   Meteor.subscribe("chats");
+  Meteor.subscribe("kids");
+  Meteor.subscribe("tests");
+  Meteor.subscribe("times");
   Meteor.subscribe("users");
-
   ///
   // helper functions
   ///
+  Template.times_page.helpers({
+   times:function(){
+     return Times.find();
+    }
+  })
+  Template.timer_page.helpers({
+   kids:function(){
+     return Kids.find();
+    },
+   tests:function(){
+     return Tests.find();
+   }
+  });
+  Template.timer_page.events({
+
+    "click .player-group":function (e){
+      console.log("player chosen"+$('.player-group>button.btn').html()+"///"+e.target);
+      $(".sbutton").innerHTML("pc");
+      $(".sbutton").innerHTML('ls');
+    }
+  });
+
+
   Template.available_user_list.helpers({
+
    users:function(){
 
      return Meteor.users.find();
@@ -184,6 +224,18 @@ if (Meteor.isServer) {
     return Meteor.users.find();
   }),
 
+  Meteor.publish('times', function () {
+    return Times.find();
+  }),
+
+ Meteor.publish('kids', function () {
+    return Kids.find();
+  }),
+
+ Meteor.publish('tests', function () {
+    return Tests.find();
+  }),
+
 
   // Only publish chats that belong to the current user
   Meteor.publish("chats", function () {
@@ -197,7 +249,23 @@ if (Meteor.isServer) {
   }),
 
   Meteor.startup(function () {
+    Kids.remove({});
+    Tests.remove({});
+    Kids.insert({name: "Mia"});
+    Kids.insert({name: "Justin"});
+    Kids.insert({name: "Ryan"});
+    Tests.insert({name:"Skating Forward"});
+    Tests.insert({name:"Skating Backward"});
+    
+    // for testing
+    if (!Times.findOne()){
+      Times.insert ({name: "Mia",skill:"S"}/*,isStart:true,time:12.34*/);
+      Times.insert ({name: "Justin",skill:"S"}/*,isStart:true,time:12.34*/);
+      Times.insert ({name: "Ryan",skill:"S"}/*,isStart:true,time:12.34*/);
+      Times.insert ({name: "Liam",skill:"S"}/*,isStart:true,time:12.34*/);
+      Times.insert ({name: "Audrey",skill:"S"}/*,isStart:true,time:12.34*/);
 
+    }
     if (!Meteor.users.findOne()){
       console.log("creating additional users");
 Meteor.users.insert({profile:{username:"Orr", avatar:"bart.png"}, emails:[{address:"i@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
@@ -206,9 +274,6 @@ Meteor.users.insert({profile:{username:"Gretzky", avatar:"lisa.png"}, emails:[{a
 
 Meteor.users.insert({profile:{username:"Mia-2016", avatar:"homer.png"}, emails:[{address:"user1@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 Meteor.users.insert({profile:{username:"Mia-2015", avatar:"dave.png"}, emails:[{address:"mia@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
-
-Meteor.users.insert({profile:{username:"ralph", avatar:"ralph.png"}, emails:[{address:"ralph@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
-Meteor.users.insert({profile:{username:"toady", avatar:"toady.png"}, emails:[{address:"toady@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
       for (var i=2;i<9;i++){
         var email = "user"+i+"@test.com";

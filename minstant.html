@@ -22,6 +22,17 @@
       <a class="navbar-brand" href="/">
         Hockey Trainer Tool
       </a>
+
+
+      <a class="navbar-brand" href="/timer">
+       timer
+      </a>
+
+     <a class="navbar-brand" href="/times">
+       times
+      </a>
+ 
+
     </div>
     <div class="nav navbar-nav">
     {{> loginButtons}}
@@ -33,6 +44,47 @@
 <!-- Top level template for the lobby page -->
 <template name="lobby_page">
 	{{> available_user_list}}
+</template>
+
+<template name="timer_page">
+<p>The times are saved in the database and can be viewed from any client. Bring up a different browser on a different machine and you'll see the same times.</p>
+<p>Available Tests:</p>
+<div class="button-group-vertical test-group" data-toggle="buttons-radio" role="group">
+  {{#each tests}}
+  {{> test}}
+  {{/each}}
+</div>
+<br>
+
+<p>Available Players:</p>
+<div class="button-group-vertical player-group" data-toggle="buttons-radio" role="group">
+  {{#each kids}}
+  {{> kid}}
+  {{/each}}
+</div>
+<div>
+  <button class="btn submit start-timer sbutton">Start</button>
+  <button class="btn stop-timer">Stop</button>
+</div>
+</template>
+
+<template name = "kid">
+  <button type="button" class="btn">{{name}}</button>
+</template>
+
+<template name = "test">
+  <button type="button" class="btn">{{name}}</button>
+</template>
+
+<template name="times_page">
+<p>Here are times saved in the database:</p>
+{{#each times}}
+{{> time}}
+{{/each}}
+</template>
+
+<template name="time">
+<p>tiem</p>
 </template>
 
 <!-- display a list of users -->
@@ -70,19 +122,25 @@
 <!-- Top level template for the chat page -->
 <template name="chat_page"><button>Upload video file</button><input type="file" id="input">
 
-	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can got to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
+	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can go to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
 <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
 
-    <iframe id = "mainviewer" src="https://player.vimeo.com/video/165785221" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+  <div>
+
+    <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
+
+    <iframe id="mainviewer" src="https://player.vimeo.com/video/165785221" width="440" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    <iframe id="secondviewer" src="https://player.vimeo.com/video/165775047" width="440" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
+    <div>
+      To play both or pause both at the same time use these controls: 
+      <button class="vcontrol">Play</button>
+      <button class="vcontrol">Pause</button>
+    </div>
 
-    <iframe id = "secondewer" src="https://player.vimeo.com/video/165785221" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-<div>
-<button>Advance Both Players One Frame</button>
-<button>Play both frames</button>
-<button>Pause both frames</button>
-<button>Line drawing tool</button>
+
+  </div>
 
 
 	<div class="row chatty">
@@ -90,7 +148,6 @@
 
 			</div>
 
-	</div>
     <div class="row">
                        <button class="btn" id= "winky">{{{parseEmoticons ";)"}}}</button>
                        <button class="btn" id= "laugh">{{{parseEmoticons ":-D"}}}</button>
