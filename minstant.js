@@ -88,13 +88,24 @@ if (Meteor.isClient) {
      return Tests.find();
    }
   });
+  var tname, kname;
   Template.timer_page.events({
+    "click .tname":function (e){
+       console.log("tname");
+       tname = e.target.name;
 
+       $(".sbutton").html(kname+" " +tname+" start");
+       $(".pbutton").html(kname+" " +tname+" start");
+    },
+    "click .kname":function (e){
+       kname=e.target.name;
+       console.log("kname:"+e.target.name);
+    }/*,
     "click .player-group":function (e){
       console.log("player chosen"+$('.player-group>button.btn').html()+"///"+e.target);
-      $(".sbutton").innerHTML("pc");
-      $(".sbutton").innerHTML('ls');
-    }
+      $(".sbutton").html("pc");
+      $(".sbutton").html('ls');
+    }*/
   });
 
 

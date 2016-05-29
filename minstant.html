@@ -49,7 +49,7 @@
 <template name="timer_page">
 <p>The times are saved in the database and can be viewed from any client. Bring up a different browser on a different machine and you'll see the same times.</p>
 <p>Available Tests:</p>
-<div class="button-group-vertical test-group" data-toggle="buttons-radio" role="group">
+<div class="btn-group-vertical test-group" data-toggle="buttons-radio" role="group">
   {{#each tests}}
   {{> test}}
   {{/each}}
@@ -57,23 +57,24 @@
 <br>
 
 <p>Available Players:</p>
-<div class="button-group-vertical player-group" data-toggle="buttons-radio" role="group">
+<div class="btn-group-vertical player-group" role="group">
   {{#each kids}}
   {{> kid}}
   {{/each}}
 </div>
+<br>
 <div>
   <button class="btn submit start-timer sbutton">Start</button>
-  <button class="btn stop-timer">Stop</button>
+  <button class="btn stop-timeri pbutton">Stop</button>
 </div>
 </template>
 
 <template name = "kid">
-  <button type="button" class="btn">{{name}}</button>
+  <button type="button" class="btn kname" name={{name}} >{{name}}</button>
 </template>
 
 <template name = "test">
-  <button type="button" class="btn">{{name}}</button>
+  <button type="button" class="btn tname name={{name}}">{{name}}</button>
 </template>
 
 <template name="times_page">
