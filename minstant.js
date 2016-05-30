@@ -24,9 +24,17 @@ Router.route('/timer', function () {
           this.render("navbar", {to:"header"});
           this.render("timer_page", {to:"main"});
         });
+Router.route('/chart', function () {
+                  this.render("navbar", {to:"header"});
+                  this.render("chart", {to:"main"});
+                });
 Router.route('/times', function () {
           this.render("navbar", {to:"header"});
           this.render("times_page", {to:"main"});
+        });
+Router.route('/config', function () {
+                  this.render("navbar", {to:"header"});
+                  this.render("config", {to:"main"});
         });
 
 
@@ -75,7 +83,7 @@ if (Meteor.isClient) {
   ///
   // helper functions
   ///
-  Template.times_page.helpers({
+  Template.timetable.helpers({
    times:function(){
      return Times.find();
     }
@@ -88,18 +96,45 @@ if (Meteor.isClient) {
      return Tests.find();
    }
   });
+
+  Template.config.events({
+    "click .addtest":function (e){
+      console.log("add a test"+$(".newtest").val());
+      Meteor.call("insertTest",$(".newtest").val());
+    },
+    "click .addplayer":function (e){
+      console.log("add a PLAYER"+$(".newplayer").val());
+            Meteor.call("insertPlayer",$(".newplayer").val());
+    }
+  });
+
   var tname, kname;
   Template.timer_page.events({
     "click .tname":function (e){
-       console.log("tname");
        tname = e.target.name;
-
-       $(".sbutton").html(kname+" " +tname+" start");
-       $(".pbutton").html(kname+" " +tname+" start");
+       console.log("tname:"+tname);
+       $(".sbutton").html(kname+" " +tname+" Start");
+       $(".pbutton").html(kname+" " +tname+" Stop");
     },
     "click .kname":function (e){
        kname=e.target.name;
        console.log("kname:"+e.target.name);
+       $(".sbutton").html(kname+" " +tname+" Start");
+       $(".pbutton").html(kname+" " +tname+" Stop");
+    },
+    "click .sbutton":function (e){
+      console.log("Adding new start time.")
+
+      var d = new Date();
+            Meteor.call("insertTime",kname,tname,"start",d.toUTCString());
+
+    },
+    "click .pbutton":function (e){
+      console.log("Adding new start time.")
+
+      var d = new Date();
+            Meteor.call("insertTime",kname,tname,"stop",d.toUTCString());
+
     }/*,
     "click .player-group":function (e){
       console.log("player chosen"+$('.player-group>button.btn').html()+"///"+e.target);
@@ -260,31 +295,34 @@ if (Meteor.isServer) {
   }),
 
   Meteor.startup(function () {
-    Kids.remove({});
-    Tests.remove({});
-    Kids.insert({name: "Mia"});
-    Kids.insert({name: "Justin"});
-    Kids.insert({name: "Ryan"});
-    Tests.insert({name:"Skating Forward"});
-    Tests.insert({name:"Skating Backward"});
-    
+    //Kids.remove({})
+    //Tests.remove({})
+    //Times.remove({})
+    if (!Kids.findOne()){
+      Kids.insert({name: "Mia"});
+      Kids.insert({name: "Justin"});
+      Kids.insert({name: "Ryan"});
+    }
+    if (!Tests.findOne()){
+      Tests.insert({name:"Skating Forward"});
+      Tests.insert({name:"Skating Backward"});
+    }
+
     // for testing
     if (!Times.findOne()){
-      Times.insert ({name: "Mia",skill:"S"}/*,isStart:true,time:12.34*/);
-      Times.insert ({name: "Justin",skill:"S"}/*,isStart:true,time:12.34*/);
-      Times.insert ({name: "Ryan",skill:"S"}/*,isStart:true,time:12.34*/);
-      Times.insert ({name: "Liam",skill:"S"}/*,isStart:true,time:12.34*/);
-      Times.insert ({name: "Audrey",skill:"S"}/*,isStart:true,time:12.34*/);
+
+  //    Times.insert ({name: "Liam",skill:"Hitting baseballs",sevent:"start",time:12.34});
+
 
     }
     if (!Meteor.users.findOne()){
       console.log("creating additional users");
-Meteor.users.insert({profile:{username:"Orr", avatar:"bart.png"}, emails:[{address:"i@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+      Meteor.users.insert({profile:{username:"Orr", avatar:"bart.png"}, emails:[{address:"i@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
-Meteor.users.insert({profile:{username:"Gretzky", avatar:"lisa.png"}, emails:[{address:"lisa@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+      Meteor.users.insert({profile:{username:"Gretzky", avatar:"lisa.png"}, emails:[{address:"lisa@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
-Meteor.users.insert({profile:{username:"Mia-2016", avatar:"homer.png"}, emails:[{address:"user1@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
-Meteor.users.insert({profile:{username:"Mia-2015", avatar:"dave.png"}, emails:[{address:"mia@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+      Meteor.users.insert({profile:{username:"Mia-2016", avatar:"homer.png"}, emails:[{address:"user1@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
+      Meteor.users.insert({profile:{username:"Mia-2015", avatar:"dave.png"}, emails:[{address:"mia@test.com"}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
 
       for (var i=2;i<9;i++){
         var email = "user"+i+"@test.com";
@@ -321,6 +359,15 @@ Meteor.users.insert({profile:{username:"Mia-2015", avatar:"dave.png"}, emails:[{
         console.log("Security alert: Wrong user is logged in.")
       }
     }},
+    insertTime: function(name,test,sevent,date){
+            Times.insert ({name: name,skill:test,sevent:sevent,time:date});
+    },
+    insertTest: function(name){
+            Tests.insert ({name: name});
+    },
+    insertPlayer: function(name){
+                Kids.insert ({name: name});
+        },
     insertChat: function(user1,user2){
       if (!user1 || !user2) {
          console.log("Error: cannot chat with someone that does not exist!");
