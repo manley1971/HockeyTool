@@ -40,12 +40,12 @@ Router.route('/config', function () {
 
   // specify a route that allows the current user to chat to another users
 Router.route('/chat/:_id', function () {
-    if (!Meteor.userId()) {
+//    if (!Meteor.userId()) {
       console.log("Security alert: trying to chat but not logged in");
       this.render("navbar", {to:"header"});
       this.render("lobby_page", {to:"main"});
       return;
-    }
+  //  }
 
     // the user they want to chat to has id equal to
     // the id sent in after /chat/...
@@ -89,11 +89,11 @@ if (Meteor.isClient) {
     }
   })
   Template.timer_page.helpers({
-   kids:function(){
-     return Kids.find();
-    },
-   tests:function(){
-     return Tests.find();
+    kids:function(){
+      return Kids.find();
+     },
+    tests:function(){
+      return Tests.find();
    }
   });
 
@@ -104,7 +104,7 @@ if (Meteor.isClient) {
     },
     "click .addplayer":function (e){
       console.log("add a PLAYER"+$(".newplayer").val());
-            Meteor.call("insertPlayer",$(".newplayer").val());
+      Meteor.call("insertPlayer",$(".newplayer").val());
     }
   });
 
@@ -126,21 +126,16 @@ if (Meteor.isClient) {
       console.log("Adding new start time.")
 
       var d = new Date();
-            Meteor.call("insertTime",kname,tname,"start",d.toUTCString());
+      Meteor.call("insertTime",kname,tname,"start",d.toUTCString());
 
     },
     "click .pbutton":function (e){
       console.log("Adding new start time.")
 
       var d = new Date();
-            Meteor.call("insertTime",kname,tname,"stop",d.toUTCString());
+      Meteor.call("insertTime",kname,tname,"stop",d.toUTCString());
 
-    }/*,
-    "click .player-group":function (e){
-      console.log("player chosen"+$('.player-group>button.btn').html()+"///"+e.target);
-      $(".sbutton").html("pc");
-      $(".sbutton").html('ls');
-    }*/
+    }
   });
 
 
@@ -363,7 +358,8 @@ if (Meteor.isServer) {
             Times.insert ({name: name,skill:test,sevent:sevent,time:date});
     },
     insertTest: function(name){
-            Tests.insert ({name: name});
+      if (!Tests.findOne({name:name}))      
+        Tests.insert ({name: name});
     },
     insertPlayer: function(name){
                 Kids.insert ({name: name});
