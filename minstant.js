@@ -138,6 +138,37 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.chart.helpers({
+   kids:function(){
+var ctx = document.getElementById("chart").getContext("2d");
+    var data = {
+      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      datasets: [{
+        label: "My First dataset",
+        fillColor: "rgba(151,187,205,0.2)",
+        data: [65, 59, 80, 81, 56, 55, 40]
+      }, {
+        label: "My Second dataset",
+        fillColor: "rgba(151,187,205,0.2)",
+        data: [28, 48, 40, 19, 86, 27, 90]
+      }]
+    };
+    var MyNewChart = new Chart(ctx).Line(data);
+
+
+
+
+      return Kids.find();
+     },
+   tests:function(){
+      return Tests.find();
+    },
+   times:function(){
+     return Times.find();
+    }
+ 
+  
+  });
 
   Template.available_user_list.helpers({
 
