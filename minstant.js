@@ -430,9 +430,10 @@ if (Meteor.isServer) {
 
   Meteor.startup(function () {
     //uncomment to clear db
-    //Kids.remove({})
-    //Tests.remove({})
-    //Times.remove({})
+    Kids.remove({})
+    Tests.remove({})
+    Times.remove({});
+    Refined.remove({});
     if (!Kids.findOne()){
       Kids.insert({name: "Mia"});
       Kids.insert({name: "Justin"});
