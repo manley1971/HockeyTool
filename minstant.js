@@ -2,6 +2,7 @@ Chats = new Mongo.Collection("chats");
 Times = new Mongo.Collection("times");
 Kids = new Mongo.Collection("kids");
 Tests = new Mongo.Collection("tests");
+Refined=new Mongo.Collection("refined");
 
 var MAX_MESSAGES = 1000000*100; //container size times messages
 function timerScroll() {
@@ -40,12 +41,12 @@ Router.route('/config', function () {
 
   // specify a route that allows the current user to chat to another users
 Router.route('/chat/:_id', function () {
-//    if (!Meteor.userId()) {
+    if (!Meteor.userId()) {
       console.log("Security alert: trying to chat but not logged in");
       this.render("navbar", {to:"header"});
       this.render("lobby_page", {to:"main"});
       return;
-  //  }
+    }
 
     // the user they want to chat to has id equal to
     // the id sent in after /chat/...
@@ -80,12 +81,20 @@ if (Meteor.isClient) {
   Meteor.subscribe("tests");
   Meteor.subscribe("times");
   Meteor.subscribe("users");
+  Meteor.subscribe("refined");
   ///
   // helper functions
   ///
+  Template.refinedtable.helpers({
+   times:function(){
+     return Refined.find({}, {sort: {time: 1, limit: 10000}});
+
+    }
+  })
   Template.timetable.helpers({
    times:function(){
-     return Times.find();
+     return Times.find({}, {sort: {ms: 1, limit: 10000}});
+
     }
   })
   Template.timer_page.helpers({
@@ -107,42 +116,136 @@ if (Meteor.isClient) {
       Meteor.call("insertPlayer",$(".newplayer").val());
     }
   });
+//XXX-change kname to an array
+  var tname="-", kname;
+  var kidNames = [];
+  function GetNamesAndTask() {
+      console.log("Get names and task");
+      var retval = '';
+      var cursor = Kids.find();
+      kidNames=[];
+      cursor.forEach(function(doc){
+        console.log(doc.name);
+        if (doc.selected) {
+          kidNames.push(doc.name);
+          if (retval == '')
+            retval = doc.name;
+          else {
+            retval+=",";
+            retval+=doc.name;
+          }
+        }
+      });
+      return retval + " " +tname;
+   }   
 
-  var tname, kname;
+  Template.timer_page.onRendered(function () {
+       console.log("render start and stop buttons");
+       tname =" "
+       $(".sbutton").html(GetNamesAndTask()+"pick a test to Start");
+       $(".pbutton").html(GetNamesAndTask()+"pick a test to Stop");
+  });
   Template.timer_page.events({
     "click .tname":function (e){
        tname = e.target.name;
        console.log("tname:"+tname);
-       $(".sbutton").html(kname+" " +tname+" Start");
-       $(".pbutton").html(kname+" " +tname+" Stop");
+       $(".sbutton").html(GetNamesAndTask()+" Start");
+       $(".pbutton").html(GetNamesAndTask()+" Stop");
     },
     "click .kname":function (e){
        kname=e.target.name;
        console.log("kname:"+e.target.name);
-       $(".sbutton").html(kname+" " +tname+" Start");
-       $(".pbutton").html(kname+" " +tname+" Stop");
+       Meteor.call("togglePlayer",kname);
+       $(".sbutton").html(GetNamesAndTask()+" Start");
+       $(".pbutton").html(GetNamesAndTask()+" Stop");
     },
     "click .sbutton":function (e){
       console.log("Adding new start time.")
 
       var d = new Date();
-      Meteor.call("insertTime",kname,tname,"start",d.toUTCString());
+      Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime);
 
     },
     "click .pbutton":function (e){
-      console.log("Adding new start time.")
+      console.log("Adding new stop time.")
 
       var d = new Date();
-      Meteor.call("insertTime",kname,tname,"stop",d.toUTCString());
-
+      Meteor.call("insertTime",kidNames,tname,"stop",d.toUTCString(),d.getTime());
+      
     }
   });
+  Template.chart.events({
+    "click .update":function (e) {
+      var kidsNames = [];
+      var cursor = Kids.find();
+      cursor.forEach(function(doc){
+        console.log(doc.name);
+        kidsNames.push(doc.name);
+      });
+
+      var ctx = $("#chart").get(0).getContext("2d");
+      var ds = [];
+      var count = 0;
+      cursor = Tests.find();
+      cursor.forEach(function(doc){
+        var o = {};
+        console.log("pushing new skill to chart of "+doc.name);
+        o.label = doc.name;
+        o.fillColor= "rgba(151,187,205,0.2)";
+        o.data = new Array();
+        for (var i = 0; i<kidsNames.length;i++) 
+          o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
+        ds.push(o);
+        count++;
+      });
+
+
+      var data = {
+        labels: kidsNames,
+        datasets: ds
+      };
+      var MyNewChart = new Chart(ctx).Line(data);
+    }
+});
+
+
+  Template.chart.onRendered(function(){
+      var kidsNames = [];
+      var cursor = Kids.find();
+      cursor.forEach(function(doc){
+        console.log(doc.name);
+        kidsNames.push(doc.name);
+      });
+
+      var ctx = $("#chart").get(0).getContext("2d");
+      var ds = [];
+      var count = 0;
+      cursor = Tests.find();
+      cursor.forEach(function(doc){
+        var o = {};
+        console.log("pushing new skill to chart of "+doc.name);
+        o.label = doc.name;
+        o.fillColor= "rgba(151,187,205,0.2)";
+        o.data = new Array();
+        for (var i = 0; i<kidsNames.length;i++) 
+          o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
+        ds.push(o);
+        count++;
+      });
+
+
+      var data = {
+        labels: kidsNames,
+        datasets: ds
+      };
+      var MyNewChart = new Chart(ctx).Line(data);
+});
 
   Template.chart.helpers({
    kids:function(){
-var ctx = document.getElementById("chart").getContext("2d");
+   /*v var ctx = $("#chart").getContext("2d");
     var data = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      labels: Kids.find(),
       datasets: [{
         label: "My First dataset",
         fillColor: "rgba(151,187,205,0.2)",
@@ -154,7 +257,7 @@ var ctx = document.getElementById("chart").getContext("2d");
       }]
     };
     var MyNewChart = new Chart(ctx).Line(data);
-
+*/
 
 
 
@@ -300,6 +403,11 @@ if (Meteor.isServer) {
     return Times.find();
   }),
 
+
+  Meteor.publish('refined', function () {
+    return Refined.find();
+  }),
+
  Meteor.publish('kids', function () {
     return Kids.find();
   }),
@@ -321,6 +429,7 @@ if (Meteor.isServer) {
   }),
 
   Meteor.startup(function () {
+    //uncomment to clear db
     //Kids.remove({})
     //Tests.remove({})
     //Times.remove({})
@@ -336,10 +445,6 @@ if (Meteor.isServer) {
 
     // for testing
     if (!Times.findOne()){
-
-  //    Times.insert ({name: "Liam",skill:"Hitting baseballs",sevent:"start",time:12.34});
-
-
     }
     if (!Meteor.users.findOne()){
       console.log("creating additional users");
@@ -357,7 +462,6 @@ if (Meteor.isServer) {
         console.log("creating a user with password 'test123' and username/ email: "+email);
         Meteor.users.insert({profile:{username:username, avatar:avatar}, emails:[{address:email}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
       }
-
     }
   });
 }
@@ -385,15 +489,33 @@ if (Meteor.isServer) {
         console.log("Security alert: Wrong user is logged in.")
       }
     }},
-    insertTime: function(name,test,sevent,date){
-            Times.insert ({name: name,skill:test,sevent:sevent,time:date});
+    insertTime: function(names,test,sevent,date,ms){
+        for (var i = 0; i<names.length; i++){
+            var name = names[i];
+            Times.insert ({name: name,skill:test,sevent:sevent,time:date,ms:ms});
+            if (sevent==="stop") {
+              var stime=Times.findOne({name:name,skill:test,sevent:"start"}, {sort: {time: -1, limit: 1}});
+            
+              console.log("calculating time against a starttime of: " + stime.time);
+              var oldDate = new Date(stime.time);
+              var finishDate = new Date(date); 
+              var numSecs = (finishDate.getTime()-oldDate.getTime())*1.0/1000.0;
+              Refined.insert ({name: name,skill:test,time:numSecs});
+            }
+        }
     },
     insertTest: function(name){
       if (!Tests.findOne({name:name}))      
         Tests.insert ({name: name});
     },
+    togglePlayer: function(name){
+        var doc = Kids.findOne({name:name});
+        var selected = !doc.selected
+
+        Kids.update({name:name}, {$set: {selected: selected}});
+    },
     insertPlayer: function(name){
-                Kids.insert ({name: name});
+                Kids.insert ({name: name, selected:false});
         },
     insertChat: function(user1,user2){
       if (!user1 || !user2) {
