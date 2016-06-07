@@ -93,7 +93,7 @@ if (Meteor.isClient) {
   })
   Template.timetable.helpers({
    times:function(){
-     return Times.find({}, {sort: {ms: 1, limit: 10000}});
+     return Times.find({}, {sort: {ms: -1, limit: 10000}});
 
     }
   })
