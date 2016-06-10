@@ -93,7 +93,7 @@ if (Meteor.isClient) {
   })
   Template.timetable.helpers({
    times:function(){
-     return Times.find({}, {sort: {ms: -1, limit: 10000}});
+     return Times.find({}, {sort: {ms: 1}});
 
     }
   })
@@ -136,21 +136,29 @@ if (Meteor.isClient) {
           }
         }
       });
+      if (!kidNames.length)
+        return "pick at least one kid to";
       return retval + " " +tname;
    }   
 
   Template.timer_page.onRendered(function () {
        console.log("render start and stop buttons");
        tname =" "
-       $(".sbutton").html(GetNamesAndTask()+"pick a test to Start");
-       $(".pbutton").html(GetNamesAndTask()+"pick a test to Stop");
+       $('.sbutton').prop('disabled', true);
+       $('.pbutton').prop('disabled', true);
+       $(".sbutton").html("pick a test First before Starting")
+       $(".pbutton").html("pick a test to Stop");
   });
   Template.timer_page.events({
     "click .tname":function (e){
        tname = e.target.name;
        console.log("tname:"+tname);
+       $(':input:checked').parent('.btn').addClass('active').siblings().removeClass("active");
        $(".sbutton").html(GetNamesAndTask()+" Start");
        $(".pbutton").html(GetNamesAndTask()+" Stop");
+       if (kidNames.length)
+         $('.sbutton').prop('disabled',false);
+         
     },
     "click .kname":function (e){
        kname=e.target.name;
@@ -164,6 +172,7 @@ if (Meteor.isClient) {
 
       var d = new Date();
       Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime);
+      $('.pbutton').prop('disabled', false);
 
     },
     "click .pbutton":function (e){
@@ -171,7 +180,7 @@ if (Meteor.isClient) {
 
       var d = new Date();
       Meteor.call("insertTime",kidNames,tname,"stop",d.toUTCString(),d.getTime());
-      
+      $('.pbutton').prop('disabled', true);
     }
   });
   Template.chart.events({
@@ -193,8 +202,13 @@ if (Meteor.isClient) {
         o.label = doc.name;
         o.fillColor= "rgba(151,187,205,0.2)";
         o.data = new Array();
-        for (var i = 0; i<kidsNames.length;i++) 
-          o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
+        for (var i = 0; i<kidsNames.length;i++) {
+          var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[o];
+          if (t)
+            o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
+          else
+            o.data.push(8);
+	}
         ds.push(o);
         count++;
       });
