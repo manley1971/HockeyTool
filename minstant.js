@@ -119,7 +119,7 @@ if (Meteor.isClient) {
     }
   });
 //XXX-change kname to an array
-  var tname="-", kname;
+  var tname="", kname;
   var kidNames = [];
   function GetNamesAndTask() {
       console.log("Get names and task");
@@ -145,13 +145,19 @@ if (Meteor.isClient) {
 
   Template.timer_page.onRendered(function () {
        console.log("render start and stop buttons");
-       tname =" "
+       tname =""
        $('.sbutton').prop('disabled', true);
        $('.pbutton').prop('disabled', true);
+       $('.rbutton').prop('disabled', true);
        $(".sbutton").html("pick a test First before Starting")
        $(".pbutton").html("pick a test to Stop");
   });
   Template.timer_page.events({
+    "click .dbutton":function (e){
+       dname = e.target.name;
+       console.log("dname:"+dname);
+       Meteor.call("removeTime",dname);
+    },
     "click .tname":function (e){
        tname = e.target.name;
        console.log("tname:"+tname);
@@ -169,7 +175,7 @@ if (Meteor.isClient) {
        Meteor.call("togglePlayer",kname);
        $(".sbutton").html(GetNamesAndTask()+" Start");
        $(".pbutton").html(GetNamesAndTask()+" Stop");
-       if (kidNames.length>0)
+       if (kidNames.length>0&&tname!="")
          $('.sbutton').prop('disabled',false);
       else
         $('.sbutton').prop('disabled',true);
@@ -180,6 +186,7 @@ if (Meteor.isClient) {
       var d = new Date();
       Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime());
       $('.pbutton').prop('disabled', false);
+      $('.rbutton').prop('disabled', false);
       $('.sbutton').prop('disabled', true);
     },
     "click .pbutton":function (e){
@@ -188,6 +195,14 @@ if (Meteor.isClient) {
       var d = new Date();
       Meteor.call("insertTime",kidNames,tname,"stop",d.toUTCString(),d.getTime());
       $('.pbutton').prop('disabled', true);
+      $('.rbutton').prop('disabled', true);
+      $('.sbutton').prop('disabled', false);
+    },
+    "click .rbutton":function (e){
+      console.log("Reset.")
+
+      $('.pbutton').prop('disabled', true);
+      $('.rbutton').prop('disabled', true);
       $('.sbutton').prop('disabled', false);
     }
   });
@@ -505,6 +520,10 @@ if (Meteor.isServer) {
         console.log("Security alert: Wrong user is logged in.")
       }
     }},
+    removeTime: function(ms){
+        Times.remove({ms:parseInt(ms)});
+        console.log("Server Removing: " + ms);
+    },
     insertTime: function(names,test,sevent,date,ms){
         for (var i = 0; i<names.length; i++){
             var name = names[i];
