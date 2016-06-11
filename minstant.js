@@ -16,19 +16,21 @@ Router.configure({
   });
   // specify the top level route, the page users see when they arrive at the site
 Router.route('/', function () {
+
     console.log("rendering root /");
     this.render("navbar", {to:"header"});
     this.render("lobby_page", {to:"main"});
   });
 
 Router.route('/timer', function () {
-          this.render("navbar", {to:"header"});
-          this.render("timer_page", {to:"main"});
-        });
+    console.log ("rendering timer")
+    this.render("navbar", {to:"header"});
+    this.render("timer_page", {to:"main"});
+});
 Router.route('/chart', function () {
-                  this.render("navbar", {to:"header"});
-                  this.render("chart", {to:"main"});
-                });
+    this.render("navbar", {to:"header"});
+    this.render("chart", {to:"main"});
+});
 Router.route('/times', function () {
           this.render("navbar", {to:"header"});
           this.render("times_page", {to:"main"});
@@ -93,7 +95,7 @@ if (Meteor.isClient) {
   })
   Template.timetable.helpers({
    times:function(){
-     return Times.find({}, {sort: {ms: 1}});
+     return Times.find({}, {sort: {ms: -1}});
 
     }
   })
@@ -139,7 +141,7 @@ if (Meteor.isClient) {
       if (!kidNames.length)
         return "pick at least one kid to";
       return retval + " " +tname;
-   }   
+   }
 
   Template.timer_page.onRendered(function () {
        console.log("render start and stop buttons");
@@ -156,9 +158,10 @@ if (Meteor.isClient) {
        $(':input:checked').parent('.btn').addClass('active').siblings().removeClass("active");
        $(".sbutton").html(GetNamesAndTask()+" Start");
        $(".pbutton").html(GetNamesAndTask()+" Stop");
-       if (kidNames.length)
+       if (kidNames.length>0)
          $('.sbutton').prop('disabled',false);
-         
+      else
+        $('.sbutton').prop('disabled',true);
     },
     "click .kname":function (e){
        kname=e.target.name;
@@ -166,14 +169,18 @@ if (Meteor.isClient) {
        Meteor.call("togglePlayer",kname);
        $(".sbutton").html(GetNamesAndTask()+" Start");
        $(".pbutton").html(GetNamesAndTask()+" Stop");
+       if (kidNames.length>0)
+         $('.sbutton').prop('disabled',false);
+      else
+        $('.sbutton').prop('disabled',true);
     },
     "click .sbutton":function (e){
       console.log("Adding new start time.")
 
       var d = new Date();
-      Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime);
+      Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime());
       $('.pbutton').prop('disabled', false);
-
+      $('.sbutton').prop('disabled', true);
     },
     "click .pbutton":function (e){
       console.log("Adding new stop time.")
@@ -181,6 +188,7 @@ if (Meteor.isClient) {
       var d = new Date();
       Meteor.call("insertTime",kidNames,tname,"stop",d.toUTCString(),d.getTime());
       $('.pbutton').prop('disabled', true);
+      $('.sbutton').prop('disabled', false);
     }
   });
   Template.chart.events({
@@ -203,12 +211,14 @@ if (Meteor.isClient) {
         o.fillColor= "rgba(151,187,205,0.2)";
         o.data = new Array();
         for (var i = 0; i<kidsNames.length;i++) {
-          var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[o];
+          var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
+          if (!t)
+              t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
           if (t)
-            o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
+            o.data.push(t.time);
           else
-            o.data.push(8);
-	}
+            o.data.push(99);
+	      }
         ds.push(o);
         count++;
       });
@@ -224,28 +234,36 @@ if (Meteor.isClient) {
 
 
   Template.chart.onRendered(function(){
-      var kidsNames = [];
-      var cursor = Kids.find();
-      cursor.forEach(function(doc){
-        console.log(doc.name);
-        kidsNames.push(doc.name);
-      });
+    var kidsNames = [];
+    var cursor = Kids.find();
+    cursor.forEach(function(doc){
+      console.log(doc.name);
+      kidsNames.push(doc.name);
+    });
 
-      var ctx = $("#chart").get(0).getContext("2d");
-      var ds = [];
-      var count = 0;
-      cursor = Tests.find();
-      cursor.forEach(function(doc){
-        var o = {};
-        console.log("pushing new skill to chart of "+doc.name);
-        o.label = doc.name;
-        o.fillColor= "rgba(151,187,205,0.2)";
-        o.data = new Array();
-        for (var i = 0; i<kidsNames.length;i++) 
-          o.data.push(Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0].time);
-        ds.push(o);
-        count++;
-      });
+    var ctx = $("#chart").get(0).getContext("2d");
+    var ds = [];
+    var count = 0;
+    cursor = Tests.find();
+    cursor.forEach(function(doc){
+      var o = {};
+      console.log("pushing new skill to chart of "+doc.name);
+      o.label = doc.name;
+      o.fillColor= "rgba(151,187,205,0.2)";
+      o.data = new Array();
+      for (var i = 0; i<kidsNames.length;i++) {
+        var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
+        if (!t)
+            t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
+        if (t)
+          o.data.push(t.time);
+        else
+          o.data.push(99);
+      }
+      ds.push(o);
+      count++;
+    });
+
 
 
       var data = {
@@ -257,23 +275,6 @@ if (Meteor.isClient) {
 
   Template.chart.helpers({
    kids:function(){
-   /*v var ctx = $("#chart").getContext("2d");
-    var data = {
-      labels: Kids.find(),
-      datasets: [{
-        label: "My First dataset",
-        fillColor: "rgba(151,187,205,0.2)",
-        data: [65, 59, 80, 81, 56, 55, 40]
-      }, {
-        label: "My Second dataset",
-        fillColor: "rgba(151,187,205,0.2)",
-        data: [28, 48, 40, 19, 86, 27, 90]
-      }]
-    };
-    var MyNewChart = new Chart(ctx).Line(data);
-*/
-
-
 
       return Kids.find();
      },
@@ -283,8 +284,8 @@ if (Meteor.isClient) {
    times:function(){
      return Times.find();
     }
- 
-  
+
+
   });
 
   Template.available_user_list.helpers({
@@ -510,17 +511,17 @@ if (Meteor.isServer) {
             Times.insert ({name: name,skill:test,sevent:sevent,time:date,ms:ms});
             if (sevent==="stop") {
               var stime=Times.findOne({name:name,skill:test,sevent:"start"}, {sort: {time: -1, limit: 1}});
-            
+
               console.log("calculating time against a starttime of: " + stime.time);
               var oldDate = new Date(stime.time);
-              var finishDate = new Date(date); 
+              var finishDate = new Date(date);
               var numSecs = (finishDate.getTime()-oldDate.getTime())*1.0/1000.0;
               Refined.insert ({name: name,skill:test,time:numSecs});
             }
         }
     },
     insertTest: function(name){
-      if (!Tests.findOne({name:name}))      
+      if (!Tests.findOne({name:name}))
         Tests.insert ({name: name});
     },
     togglePlayer: function(name){
