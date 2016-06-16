@@ -61,9 +61,17 @@
 <template name="chart">
   <button class="btn update">Update Chart</button>
   <canvas id="chart" width="500" height="500"></canvas>
-  {{#each kids}}
+<ol>
+ 
+ {{#each tests}}
+<li><button class="btn" id = "l{{@index}}">-  {{name}}</button></li>
+
   {{/each}}
-  <!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"</script>
+</ol>
+<!--  {{legend}}
+<div id="js-legend" class="chart-legend"><h4>BoatyMcBoatface</h4></div>
+-->
+<!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"</script>
   <script>
     var ctx = document.getElementById("chart").getContext("2d");
     var data = {

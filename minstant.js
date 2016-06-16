@@ -16,7 +16,6 @@ Router.configure({
   });
   // specify the top level route, the page users see when they arrive at the site
 Router.route('/', function () {
-
     console.log("rendering root /");
     this.render("navbar", {to:"header"});
     this.render("lobby_page", {to:"main"});
@@ -218,13 +217,21 @@ if (Meteor.isClient) {
       var ctx = $("#chart").get(0).getContext("2d");
       var ds = [];
       var count = 0;
+      var totalTests = Tests.find().count();
       cursor = Tests.find();
       cursor.forEach(function(doc){
-        var o = {};
-        console.log("pushing new skill to chart of "+doc.name);
+        var o = new Object;
         o.label = doc.name;
-        o.fillColor= "rgba(151,187,205,0.2)";
         o.data = new Array();
+        o.fillColor= "rgba(151,187,205,0.2)";
+        var r = 1.0-count*.1;
+        var red = ((count+1)%2)*360
+        var green = ((count)%2)*360
+        var blue = ((count)%2)*360
+        var g = 50*count;
+        console.log("click pushing new skill to chart of "+doc.name+" with count of "+count);
+        o.strokeColor= "rgba("+red+","+green+","+blue+","+r+")";
+        $("#l"+count).css("color",o.strokeColor);
         for (var i = 0; i<kidsNames.length;i++) {
           var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
           if (!t)
@@ -233,65 +240,75 @@ if (Meteor.isClient) {
             o.data.push(t.time);
           else
             o.data.push(99);
-	      }
+	}
         ds.push(o);
         count++;
       });
 
-
       var data = {
         labels: kidsNames,
-        datasets: ds
-      };
-      var MyNewChart = new Chart(ctx).Line(data);
+        datasets: ds,
+      }
+      var hockeyChart = new Chart(ctx).Line(data);
+//      document.getElementById('js-legend').innerHTML = hockeyChart.generateLegend();
+
     }
 });
 
 
   Template.chart.onRendered(function(){
-    var kidsNames = [];
-    var cursor = Kids.find();
-    cursor.forEach(function(doc){
-      console.log(doc.name);
-      kidsNames.push(doc.name);
-    });
+   setTimeout(function(){
+     var kidsNames = [];
+      var cursor = Kids.find();
+      cursor.forEach(function(doc){
+        console.log(doc.name);
+        kidsNames.push(doc.name);
+      });
 
-    var ctx = $("#chart").get(0).getContext("2d");
-    var ds = [];
-    var count = 0;
-    cursor = Tests.find();
-    cursor.forEach(function(doc){
-      var o = {};
-      console.log("pushing new skill to chart of "+doc.name);
-      o.label = doc.name;
-      o.fillColor= "rgba(151,187,205,0.2)";
-      o.data = new Array();
-      for (var i = 0; i<kidsNames.length;i++) {
-        var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
-        if (!t)
-            t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
-        if (t)
-          o.data.push(t.time);
-        else
-          o.data.push(99);
-      }
-      ds.push(o);
-      count++;
-    });
-
-
+      var ctx = $("#chart").get(0).getContext("2d");
+      var ds = [];
+      var count = 0;
+      var totalTests = Tests.find().count();
+      cursor = Tests.find();
+      cursor.forEach(function(doc){
+        var o = new Object;
+        o.label = doc.name;
+        o.data = new Array();
+        o.fillColor= "rgba(151,187,205,0.2)";
+        var r = 1.0-count*.1;
+        var red = ((count+1)%2)*360
+        var green = ((count)%2)*360
+        var blue = ((count)%2)*360
+        var g = 50*count;
+        console.log("click pushing new skill to chart of "+doc.name+" with count of "+count);
+        o.strokeColor= "rgba("+red+","+green+","+blue+","+r+")";
+        $("#l"+count).css("color",o.strokeColor);
+        for (var i = 0; i<kidsNames.length;i++) {
+          var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
+          if (!t)
+              t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
+          if (t)
+            o.data.push(t.time);
+          else
+            o.data.push(99);
+	}
+        ds.push(o);
+        count++;
+      });
 
       var data = {
         labels: kidsNames,
-        datasets: ds
-      };
-      var MyNewChart = new Chart(ctx).Line(data);
+        datasets: ds,
+      }
+      var hockeyChart = new Chart(ctx).Line(data);
+//      document.getElementById('js-legend').innerHTML = hockeyChart.generateLegend();
+
+
+ },1000);
 });
 
   Template.chart.helpers({
-   kids:function(){
-
-      return Kids.find();
+    legend:function(){
      },
    tests:function(){
       return Tests.find();
