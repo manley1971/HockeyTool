@@ -225,9 +225,9 @@ if (Meteor.isClient) {
         o.data = new Array();
         o.fillColor= "rgba(151,187,205,0.2)";
         var r = 1.0-count*.1;
-        var red = ((count+1)%2)*360
-        var green = ((count)%2)*360
-        var blue = ((count)%2)*360
+        var red = ((count+1)%totalTests)*100
+        var green = ((count+2)%totalTests)*100
+        var blue = ((count+3)%totalTests)*100
         var g = 50*count;
         console.log("click pushing new skill to chart of "+doc.name+" with count of "+count);
         o.strokeColor= "rgba("+red+","+green+","+blue+","+r+")";
@@ -269,6 +269,7 @@ if (Meteor.isClient) {
       var ds = [];
       var count = 0;
       var totalTests = Tests.find().count();
+      totalTests=totalTests?totalTests:4;
       cursor = Tests.find();
       cursor.forEach(function(doc){
         var o = new Object;
@@ -276,9 +277,9 @@ if (Meteor.isClient) {
         o.data = new Array();
         o.fillColor= "rgba(151,187,205,0.2)";
         var r = 1.0-count*.1;
-        var red = ((count+1)%2)*360
-        var green = ((count)%2)*360
-        var blue = ((count)%2)*360
+        var red = ((count+1)%totalTests)*50
+        var green = ((count+2)%totalTests)*50
+        var blue = ((count+3)%totalTests)*50
         var g = 50*count;
         console.log("click pushing new skill to chart of "+doc.name+" with count of "+count);
         o.strokeColor= "rgba("+red+","+green+","+blue+","+r+")";
