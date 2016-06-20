@@ -20,11 +20,17 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/">
-        Hockey Trainer Tool version 1.2
+        Hockey Trainer Tool version 1.2big
       </a>
 
       <a class="navbar-brand" href="/timer">
-       timer
+       set up timer
+      </a>
+      <a class="navbar-brand" href="/start">
+        start
+       </a>
+       <a class="navbar-brand" href="/dump">
+         dump
       </a>
       <a class="navbar-brand" href="/config">
        config
@@ -32,6 +38,7 @@
      <a class="navbar-brand" href="/times">
        times
       </a>
+
       <a class="navbar-brand" href="/chart">
        chart
       </a>
@@ -57,6 +64,10 @@
 
 </template>
 
+<template name="dump">
+  <h2> rough csv of times </h2>
+  <button id="out">ERROR</button>
+</template>
 
 <template name="chart">
   <button class="btn update">Update Chart</button>
@@ -90,13 +101,17 @@
   </script-->
 </template>
 
+<template name="start_page">
+      <button class="btn submit start-timer bbutton" disabled>Start</button>
+</template>
+
 
 <template name="timer_page">
 <p>Click on a test, click on a player, click start, and finally click stop. The times are saved in the database and can be viewed from any client. The start/stop time is calculated and then put onto a graph. Bring up a different browser on a different machine and you'll see the same times.</p>
 <p>Available Tests:</p>
-<div class="btn-group test-group inset-div" data-toggle="buttons" role="group">
+<div class="btn-group test-group inset-div"  role="group" data-toggle="buttons">
   {{#each tests}}
-  {{> test}}
+  <button class="btn btn-default tname" type="button" id = "t{{@index}}"  name="{{name}}">{{name}}</button>
   {{/each}}
 </div>
 <br>
@@ -138,7 +153,7 @@
 </template>
 
 <template name = "test">
-  <button class="btn tname" type="radio" name="{{name}}"  >{{name}}</button>
+  <button class="btn btn-default tname" type="button" id = "t5"  name="{{name}}">{{name}}</button>
 </template>
 
 <template name="times_page">

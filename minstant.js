@@ -26,9 +26,18 @@ Router.route('/timer', function () {
     this.render("navbar", {to:"header"});
     this.render("timer_page", {to:"main"});
 });
+Router.route('/start', function () {
+    console.log ("just the start button")
+    this.render("navbar", {to:"header"});
+    this.render("start_page", {to:"main"});
+});
 Router.route('/chart', function () {
     this.render("navbar", {to:"header"});
     this.render("chart", {to:"main"});
+});
+Router.route('/dump', function () {
+    this.render("navbar", {to:"header"});
+    this.render("dump", {to:"main"});
 });
 Router.route('/times', function () {
           this.render("navbar", {to:"header"});
@@ -117,8 +126,8 @@ if (Meteor.isClient) {
       Meteor.call("insertPlayer",$(".newplayer").val());
     }
   });
-//XXX-change kname to an array
-  var tname="", kname;
+
+  var tname = "";
   var kidNames = [];
   function GetNamesAndTask() {
       console.log("Get names and task");
@@ -137,19 +146,86 @@ if (Meteor.isClient) {
           }
         }
       });
-      if (!kidNames.length)
-        return "pick at least one kid to";
-      return retval + " " +tname;
+      //for now let the button just say "Start" or "Stop"
+      return "";
+//      if (!kidNames.length)
+//        return "pick at least one kid to";
+//      return retval + " " +tname;
    }
+
+   var isStart;
+   Template.start_page.onRendered(function () {
+     tname = Session.get("tname")
+     // XXX Side effects on this console.log...
+     console.log("render start and stop buttons"+GetNamesAndTask());
+
+     if ((tname=="")||(kidNames==[])){
+        $('.bbutton').prop('disabled', true);
+        $(".bbutton").html("---")
+      }
+      else {
+        $('.bbutton').prop('disabled', false);
+        isStart = Session.get("isStart")
+        if (isStart)
+          $(".bbutton").html("Start")
+        else {
+          $(".bbutton").html("Stop")
+        }
+      }
+   });
+
+   Template.start_page.events({
+
+     "click .bbutton":function (e){
+       isStart = Session.get("isStart")
+       tname = Session.get("tname")
+       console.log("Adding new start/stop time from big button.")
+       var d = new Date();
+       if (isStart)
+         Meteor.call("insertTime",kidNames,tname,"start",d.toUTCString(),d.getTime());
+       else
+         Meteor.call("insertTime",kidNames,tname,"stop",d.toUTCString(),d.getTime());
+       isStart = !isStart;
+       Session.set("isStart",isStart)
+       if (isStart)
+         $(".bbutton").html("Start")
+       else {
+         $(".bbutton").html("Stop")
+       }
+     }
+   });
 
   Template.timer_page.onRendered(function () {
        console.log("render start and stop buttons");
-       tname =""
-       $('.sbutton').prop('disabled', true);
-       $('.pbutton').prop('disabled', true);
-       $('.rbutton').prop('disabled', true);
-       $(".sbutton").html("pick a test First before Starting")
-       $(".pbutton").html("pick a test to Stop");
+//       tname ="";
+//       Session.set("tname",tname);
+       tname = Session.get("tname");
+       isStart = Session.get("isStart")
+       // XXX Side effects on this console.log...
+       console.log("render start and stop buttons"+GetNamesAndTask());
+
+       if ((tname=="")||(kidNames==[])){
+         $('.sbutton').prop('disabled', true);
+         $('.pbutton').prop('disabled', true);
+         $('.rbutton').prop('disabled', true);
+         $(".sbutton").html("pick a test First before Starting")
+         $(".pbutton").html("Not near needing to Stop");
+       }
+       else {
+         if (isStart) {
+           $('.sbutton').prop('disabled', false);
+           $('.pbutton').prop('disabled', true);
+           $('.rbutton').prop('disabled', false);
+           $(".sbutton").html(GetNamesAndTask()+" Start");
+           $(".pbutton").html(GetNamesAndTask()+" Stop");
+         } else {
+           $('.sbutton').prop('disabled', true);
+           $('.pbutton').prop('disabled', false);
+           $('.rbutton').prop('disabled', false);
+           $(".sbutton").html(GetNamesAndTask()+" Start");
+           $(".pbutton").html(GetNamesAndTask()+" Stop");
+         }
+       }
   });
   Template.timer_page.events({
     "click .dbutton":function (e){
@@ -159,17 +235,24 @@ if (Meteor.isClient) {
     },
     "click .tname":function (e){
        tname = e.target.name;
-       console.log("tname:"+tname);
-       $(':input:checked').parent('.btn').addClass('active').siblings().removeClass("active");
+       var tid = e.target.id;
+       Session.set("tname",tname)
+       console.log("tname:"+tname+ tid);
+       $("#"+tid).siblings().removeClass("active");
+       $("#"+tid).addClass("active");
        $(".sbutton").html(GetNamesAndTask()+" Start");
        $(".pbutton").html(GetNamesAndTask()+" Stop");
-       if (kidNames.length>0)
+       if (kidNames.length>0) {
          $('.sbutton').prop('disabled',false);
-      else
+         Session.set("isStart",true)
+       }
+      else {
         $('.sbutton').prop('disabled',true);
+        Session.set("isStart",true)
+      }
     },
     "click .kname":function (e){
-       kname=e.target.name;
+       var kname=e.target.name;
        console.log("kname:"+e.target.name);
        Meteor.call("togglePlayer",kname);
        $(".sbutton").html(GetNamesAndTask()+" Start");
@@ -178,6 +261,7 @@ if (Meteor.isClient) {
          $('.sbutton').prop('disabled',false);
       else
         $('.sbutton').prop('disabled',true);
+      Session.set("isStart",true)
     },
     "click .sbutton":function (e){
       console.log("Adding new start time.")
@@ -187,6 +271,7 @@ if (Meteor.isClient) {
       $('.pbutton').prop('disabled', false);
       $('.rbutton').prop('disabled', false);
       $('.sbutton').prop('disabled', true);
+      Session.set("isStart",false)
     },
     "click .pbutton":function (e){
       console.log("Adding new stop time.")
@@ -196,6 +281,7 @@ if (Meteor.isClient) {
       $('.pbutton').prop('disabled', true);
       $('.rbutton').prop('disabled', true);
       $('.sbutton').prop('disabled', false);
+      Session.set("isStart",true)
     },
     "click .rbutton":function (e){
       console.log("Reset.")
@@ -203,6 +289,14 @@ if (Meteor.isClient) {
       $('.pbutton').prop('disabled', true);
       $('.rbutton').prop('disabled', true);
       $('.sbutton').prop('disabled', false);
+      Session.set("isStart",true)
+    }
+  });
+  Template.times_page.events({
+    "click .dbutton":function (e){
+       dname = e.target.name;
+       console.log("dname:"+dname);
+       Meteor.call("removeTime",dname);
     }
   });
   Template.chart.events({
@@ -255,7 +349,9 @@ if (Meteor.isClient) {
     }
 });
 
-
+  Template.dump.onRendered(function(){
+    ($("#out").html("error"));
+  });
   Template.chart.onRendered(function(){
    setTimeout(function(){
      var kidsNames = [];

@@ -12,11 +12,16 @@
   border-width: 3px;
 }
 
+.bbutton{
+  font-size: 340px;
+  width:80%;
+}
+
 .sbutton{
-  font-size:60px;
+  font-size:180px;
 }
 .pbutton{
-  font-size:60px;
+  font-size:180px;
 }
 .inset-div {
   box-sizing: border-box;
