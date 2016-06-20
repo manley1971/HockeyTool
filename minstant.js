@@ -201,6 +201,8 @@ if (Meteor.isClient) {
 //       Session.set("tname",tname);
        tname = Session.get("tname");
        isStart = Session.get("isStart")
+       var tid = Session.get("tid");
+       $("#"+tid).addClass("active");
        // XXX Side effects on this console.log...
        console.log("render start and stop buttons"+GetNamesAndTask());
 
@@ -237,6 +239,7 @@ if (Meteor.isClient) {
        tname = e.target.name;
        var tid = e.target.id;
        Session.set("tname",tname)
+       Session.set("tid",tid);
        console.log("tname:"+tname+ tid);
        $("#"+tid).siblings().removeClass("active");
        $("#"+tid).addClass("active");
