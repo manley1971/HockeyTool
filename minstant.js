@@ -353,8 +353,30 @@ if (Meteor.isClient) {
 });
 
   Template.dump.onRendered(function(){
-    ($("#out").html("error"));
+    var cursor = Times.find();
+    var row = $("#out");
+    var ms = -1;
+
+    cursor.forEach(function(doc){
+            console.log(doc.name + doc.skill +doc.sevent+doc.time+doc.ms+doc.isGroup);
+      var groupStr = " "
+      if (doc.isGroup)
+        groupStr = " and group "
+
+      if (ms==doc.ms)
+        console.log("Skip the rest of the group")
+      else
+        row.append("<p class='entry'>" + doc.name+groupStr +','+ doc.skill+', '+ doc.sevent+','+doc.time+"</p> </br>");
+      ms=doc.ms;
+    });
+//    ($("#out").html("error"));
   });
+  Template.dump.helpers({
+   times:function(){
+     return Times.find();
+    }
+  });
+
   Template.chart.onRendered(function(){
    setTimeout(function(){
      var kidsNames = [];
@@ -402,8 +424,6 @@ if (Meteor.isClient) {
       }
       var hockeyChart = new Chart(ctx).Line(data);
 //      document.getElementById('js-legend').innerHTML = hockeyChart.generateLegend();
-
-
  },1000);
 });
 
@@ -416,8 +436,6 @@ if (Meteor.isClient) {
    times:function(){
      return Times.find();
     }
-
-
   });
 
   Template.available_user_list.helpers({
@@ -644,7 +662,7 @@ if (Meteor.isServer) {
     insertTime: function(names,test,sevent,date,ms){
         for (var i = 0; i<names.length; i++){
             var name = names[i];
-            Times.insert ({name: name,skill:test,sevent:sevent,time:date,ms:ms});
+            Times.insert ({name: name,skill:test,sevent:sevent,time:date,ms:ms,isGroup:(names.length>1)});
             if (sevent==="stop") {
               var stime=Times.findOne({name:name,skill:test,sevent:"start"}, {sort: {time: -1, limit: 1}});
 
