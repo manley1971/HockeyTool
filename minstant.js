@@ -331,8 +331,8 @@ if (Meteor.isClient) {
         $("#l"+count).css("color",o.strokeColor);
         for (var i = 0; i<kidsNames.length;i++) {
           var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
-          if (!t)
-              t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
+  //        if (!t)
+  //            t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
           if (t)
             o.data.push(t.time);
           else
@@ -407,12 +407,12 @@ if (Meteor.isClient) {
         $("#l"+count).css("color",o.strokeColor);
         for (var i = 0; i<kidsNames.length;i++) {
           var t = Refined.find({name:kidsNames[i],skill:doc.name},{sort:{time:1}}).fetch()[0];
-          if (!t)
-              t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
+          //if (!t)
+              //t = Refined.find({skill:doc.name},{sort:{time:-1}}).fetch()[0];
           if (t)
             o.data.push(t.time);
           else
-            o.data.push(99);
+            o.data.push(-1);
 	}
         ds.push(o);
         count++;
