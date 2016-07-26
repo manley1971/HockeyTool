@@ -1,27 +1,24 @@
-
-.vid{
-  border-style:solid;
+/* The style is basic for now, if this was an app we could do things up*/
+.vid {
+  border-style: solid;
 }
-
 .scrolling-div {
   height: 100px;
-  width:95%;
-  overflow:scroll;
+  width: 95%;
+  overflow: scroll;
   box-sizing: border-box;
   border-style: solid;
   border-width: 3px;
 }
-
-.bbutton{
+.bbutton {
   font-size: 340px;
-  width:80%;
+  width: 80%;
 }
-
-.sbutton{
-  font-size:180px;
+.sbutton {
+  font-size: 180px;
 }
-.pbutton{
-  font-size:180px;
+.pbutton {
+  font-size: 180px;
 }
 .inset-div {
   box-sizing: border-box;
@@ -31,14 +28,10 @@
   border-right-color: #eee;
   border-bottom-color: #e5e5e5;
   border-left-color: #eee;
-
   font-family: Times;
   text-align: left;
-
-
-
   box-shadow: 10px 10px 25px 20px #888888;
 }
-.avatar_img{
-	height:75px;
+.avatar_img {
+  height: 75px;
 }

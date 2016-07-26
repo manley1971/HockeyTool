@@ -7,218 +7,185 @@
 
 <!-- this is the main template used by iron:router to build the page -->
 <template name="ApplicationLayout">
-	{{> yield "header"}}
-
-	<div class="container">
-	{{> yield "main"}}
-	</div>
+  {{> yield "header"}}
+  <div class="container">
+    {{> yield "main"}}
+  </div>
 </template>
 
 <!-- top level template for the nav bar -->
 <template name="navbar">
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">
         Hockey Trainer Tool version 1.2big
       </a>
-
-      <a class="navbar-brand" href="/timer">
+        <a class="navbar-brand" href="/timer">
        set up timer
       </a>
-      <a class="navbar-brand" href="/start">
+        <a class="navbar-brand" href="/start">
         start
        </a>
-       <a class="navbar-brand" href="/dump">
+        <a class="navbar-brand" href="/dump">
          dump
       </a>
-      <a class="navbar-brand" href="/config">
+        <a class="navbar-brand" href="/config">
        config
       </a>
-     <a class="navbar-brand" href="/times">
+        <a class="navbar-brand" href="/times">
        times
       </a>
-
-      <a class="navbar-brand" href="/chart">
+        <a class="navbar-brand" href="/chart">
        chart
       </a>
+      </div>
+      <div class="nav navbar-nav">
+        {{> loginButtons}}
+      </div>
     </div>
-    <div class="nav navbar-nav">
-    {{> loginButtons}}
-</div>
-  </div>
-</nav>
+  </nav>
 </template>
 
 <!-- Top level template for the lobby page -->
 <template name="lobby_page">
-	{{> available_user_list}}
+  {{> available_user_list}}
 </template>
 
 <template name="config">
 
   Add a test:
-  <input type="text" class = "newtest" name="test"><button class="addtest btn">Put into DB</button><br>
-  Add a player:
-  <input type="text" class = "newplayer" name="player"><button class="addplayer btn">Put into DB</button><br>
+  <input type="text" class="newtest" name="test">
+  <button class="addtest btn">Put into DB</button>
+  <br> Add a player:
+  <input type="text" class="newplayer" name="player">
+  <button class="addplayer btn">Put into DB</button>
+  <br>
 
 </template>
 
 <template name="dump">
   <h2> rough csv of times </h2>
-<!--  {{#each times}}
-  <p> {{name}}{{test}}{{sevent}}{{date}}</p>
-    {{/each}}-->
   <div id="out"></div>
 </template>
 
 <template name="chart">
   <button class="btn update">Update Chart</button>
   <canvas id="chart" width="500" height="500"></canvas>
-<ol>
+  <ol>
 
- {{#each tests}}
-<li><button class="btn" id = "l{{@index}}">-  {{name}}</button></li>
+    {{#each tests}}
+    <li>
+      <button class="btn" id="l{{@index}}">- {{name}}</button>
+    </li>
 
-  {{/each}}
-</ol>
-<!--  {{legend}}
-<div id="js-legend" class="chart-legend"><h4>BoatyMcBoatface</h4></div>
--->
-<!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"</script>
-  <script>
-    var ctx = document.getElementById("chart").getContext("2d");
-    var data = {
-      labels: ["Mia", "justin","ryan","dave"],
-      datasets: [{
-        label: "My First dataset",
-        fillColor: "rgba(151,187,205,0.2)",
-        data: [65, 59, 80, 81, 56, 55, 40]
-      }, {
-        label: "My Second dataset",
-        fillColor: "rgba(151,187,205,0.2)",
-        data: [28, 48, 40, 19, 86, 27, 90]
-      }]
-    };
-    var MyNewChart = new Chart(ctx).Line(data);
-  </script-->
+    {{/each}}
+  </ol>
 </template>
 
 <template name="start_page">
-      <button class="btn submit start-timer bbutton" disabled>Start</button>
+  <button class="btn submit start-timer bbutton" disabled>Start</button>
 </template>
 
 
 <template name="timer_page">
-<p>Click on a test, click on a player, click start, and finally click stop. The times are saved in the database and can be viewed from any client. The start/stop time is calculated and then put onto a graph. Bring up a different browser on a different machine and you'll see the same times.</p>
-<p>Available Tests:</p>
-<div class="btn-group test-group inset-div"  role="group" data-toggle="buttons">
-  {{#each tests}}
-  <button class="btn btn-default tname" type="button" id = "t{{@index}}"  name="{{name}}">{{name}}</button>
-  {{/each}}
-</div>
-<br>
-<br>
-<br>
+  <p>Click on a test, click on a player, click start, and finally click stop. The times are saved in the database and can be viewed from any client. The start/stop time is calculated and then put onto a graph. Bring up a different browser on a different
+    machine and you'll see the same times.</p>
+  <p>Available Tests:</p>
+  <div class="btn-group test-group inset-div" role="group" data-toggle="buttons">
+    {{#each tests}}
+    <button class="btn btn-default tname" type="button" id="t{{@index}}" name="{{name}}">{{name}}</button>
+    {{/each}}
+  </div>
+  <br>
+  <br>
+  <br>
 
+  <p>Available Players:</p>
+  <div class="btn-group player-group inset-div" data-toggle="buttons-radio" role="group">
+    {{#each kids}} {{> kid}} {{/each}}
+  </div>
+  <br>
+  <br>
+  <br>
 
-<p>Available Players:</p>
-<div class="btn-group player-group inset-div" data-toggle="buttons-radio" role="group">
-  {{#each kids}}
-  {{> kid}}
-  {{/each}}
-</div>
-<br>
-<br>
-<br>
-<!--div class="inset-div"-->
-  <button class="btn submit start-timer sbutton" >Start</button>
+  <button class="btn submit start-timer sbutton">Start</button>
   <button class="btn stop-timer pbutton" disabled>Stop</button>
   <button class="btn stop-timer rbutton" disabled>Reset</button>
-
-<!--/div-->
-<br>
-<br>
-<div class="scrolling-div">
-{{>timetable}}
-</div>
-<!--div class="scrolling-div">
-{{>refinedtable}}
-</div-->
+  <br>
+  <br>
+  <div class="scrolling-div">
+    {{>timetable}}
+  </div>
 </template>
 
-<template name = "kid">
+<template name="kid">
   {{#if selected}}
-  <button type="button" class="btn kname active" name={{name}} >{{name}}</button>
+  <button type="button" class="btn kname active" name={{name}}>{{name}}</button>
   {{else}}
-  <button type="button" class="btn kname" name={{name}} >{{name}}</button>
-{{/if}}
+  <button type="button" class="btn kname" name={{name}}>{{name}}</button>
+  {{/if}}
 </template>
 
-<template name = "test">
-  <button class="btn btn-default tname" type="button" id = "t5"  name="{{name}}">{{name}}</button>
+<template name="test">
+  <button class="btn btn-default tname" type="button" id="t5" name="{{name}}">{{name}}</button>
 </template>
 
 <template name="times_page">
-<p>Here are times saved in the database:</p>
-{{>timetable}}
-<p>Here are the times it took for each activity (make this editable eventually since they are rough numbers)</p>
-{{>refinedtable}}
+  <p>Here are times saved in the database:</p>
+  {{>timetable}}
+  <p>Here are the times it took for each activity (make this editable eventually since they are rough numbers)</p>
+  {{>refinedtable}}
 </template>
 
-<template name = "refinedtable">
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Skill</th>
-      <th>Fastest Time in seconds rounded up</th>
-    </tr>
-  </thead>
-  <tbody>
-{{#each times}}
-{{> refinedtime}}
-{{/each}}
-</tbody>
-</table>
+<template name="refinedtable">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Skill</th>
+        <th>Fastest Time in seconds rounded up</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each times}} {{> refinedtime}} {{/each}}
+    </tbody>
+  </table>
 </template>
 
 
-<template name = "timetable">
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Skill</th>
-      <th>Event</th>
-      <th>Time</th>
-    </tr>
-  </thead>
-  <tbody>
-{{#each times}}
-{{> time}}
-{{/each}}
-</tbody>
-</table>
+<template name="timetable">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Skill</th>
+        <th>Event</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each times}} {{> time}} {{/each}}
+    </tbody>
+  </table>
 </template>
 
 <template name="time">
-
-      <tr>
-        <td>{{name}}</td>
-        <td>{{skill}}</td>
-        <td>{{sevent}}</td>
-        <td>{{time}}</td>
-          <button class="btn submit dbutton" name="{{ms}}" >Remove</button>
-      </tr>
+  <tr>
+    <td>{{name}}</td>
+    <td>{{skill}}</td>
+    <td>{{sevent}}</td>
+    <td>{{time}}</td>
+    <button class="btn submit dbutton" name="{{ms}}">Remove</button>
+  </tr>
 </template>
 
 <template name="refinedtime">
-     <tr>
-        <td>{{name}}</td>
-        <td>{{skill}}</td>
-        <td>{{time}}</td>
-      </tr>
+  <tr>
+    <td>{{name}}</td>
+    <td>{{skill}}</td>
+    <td>{{time}}</td>
+  </tr>
 </template>
 
 
@@ -226,44 +193,38 @@
 
 <!-- display a list of users -->
 <template name="available_user_list">
-	<h2>Choose a demonstration video to compare the logged in user with:</h2>
-	<div class="row">
-	{{#each users}}
-	{{> available_user}}
-	{{/each}}
-</div>
+  <h2>Choose a demonstration video to compare the logged in user with:</h2>
+  <div class="row">
+    {{#each users}} {{> available_user}} {{/each}}
+  </div>
 </template>
 
 <!-- display an individual user -->
 <template name="available_user">
-	<div class="col-md-2">
-		<div class="user_avatar">
-			{{#if isMyUser _id}}
-			<div class="bg-success">{{getUsername _id}} (YOU)
-				<br/>
-				<img src="/{{profile.avatar}}" class="avatar_img">
-			</div>
-			{{else}}
-			<a href="/chat/{{_id}}">
+  <div class="col-md-2">
+    <div class="user_avatar">
+      {{#if isMyUser _id}}
+      <div class="bg-success">{{getUsername _id}} (YOU)
+        <br/>
+        <img src="/{{profile.avatar}}" class="avatar_img">
+      </div>
+      {{else}}
+      <a href="/chat/{{_id}}">
 				{{getUsername _id}}
 				<br/>
 				<img src="/{{profile.avatar}}" class="avatar_img">
-			</a>
-			{{/if}}
-		</div>
-	</div>
+			</a> {{/if}}
+    </div>
+  </div>
 </template>
 
-
-
 <!-- Top level template for the chat page -->
-<template name="chat_page"><button>Upload video file</button><input type="file" id="input">
-
-	<h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can go to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
-<script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
-
+<template name="chat_page">
+  <button>Upload video file</button>
+  <input type="file" id="input">
+  <h5>After the video is loaded, you can press play. Comments typed in the field below will be stored in the mongodb and saved. You can go to any computer connected to the net and after logging on see all videos and comments for that user.</h5>
+  <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
   <div>
-
     <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
 
     <iframe id="mainviewer" src="https://player.vimeo.com/video/165785221" width="440" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -275,39 +236,30 @@
       <button class="vcontrol">Play</button>
       <button class="vcontrol">Pause</button>
     </div>
-
-
   </div>
-
-
-	<div class="row chatty">
-
-
-			</div>
-
-    <div class="row">
-                       <button class="btn" id= "winky">{{{parseEmoticons ";)"}}}</button>
-                       <button class="btn" id= "laugh">{{{parseEmoticons ":-D"}}}</button>
-                       <button class="btn" id= "cheeky">{{{parseEmoticons ":-P"}}}</button>
-                       <button class="btn" id= "happy">{{{parseEmoticons ":-))"}}}</button>
-                       <button class="btn" id= "smiley">{{{parseEmoticons ":-)"}}}</button>
-                       <button class="btn" id= "sad">{{{parseEmoticons ":-("}}}</button>
-                       <button class="btn" id= "shocked">{{{parseEmoticons ":-O"}}}</button>
-		<div class="col-md-12">
-			<form class="js-send-chat">
-			<input id="m"  class="input" type="text" name="chat" placeholder="type a message here...">
-		<button class="btn btn-default">send</button>
-		</form>
-		</div>
-	</div>
+  <div class="row chatty">
+  </div>
+  <div class="row">
+    <button class="btn" id="winky">{{{parseEmoticons ";)"}}}</button>
+    <button class="btn" id="laugh">{{{parseEmoticons ":-D"}}}</button>
+    <button class="btn" id="cheeky">{{{parseEmoticons ":-P"}}}</button>
+    <button class="btn" id="happy">{{{parseEmoticons ":-))"}}}</button>
+    <button class="btn" id="smiley">{{{parseEmoticons ":-)"}}}</button>
+    <button class="btn" id="sad">{{{parseEmoticons ":-("}}}</button>
+    <button class="btn" id="shocked">{{{parseEmoticons ":-O"}}}</button>
+    <div class="col-md-12">
+      <form class="js-send-chat">
+        <input id="m" class="input" type="text" name="chat" placeholder="type a message here...">
+        <button class="btn btn-default">send</button>
+      </form>
+    </div>
+  </div>
 </template>
 
 <!-- simple template that displays a message -->
 <template name="chat_message">
-	<div class="one">
-	<img src="/{{avatar}}" class="avatar_img">
-
-	{{sent_by}}:{{{parseEmoticons text}}}
-	<br>
-	</div>
+  <div class="one">
+    <img src="/{{avatar}}" class="avatar_img"> {{sent_by}}:{{{parseEmoticons text}}}
+    <br>
+  </div>
 </template>
